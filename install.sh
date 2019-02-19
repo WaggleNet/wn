@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # Set the installation folder if not set
-: ${WN_PATH="~/wagglenet-wn"};
+: ${HOME=$(eval echo ~)};
+: ${WN_PATH="$HOME/wagglenet-wn"};
 
 # Stop execution if stuff goes wrong
 set -e;
@@ -67,7 +68,8 @@ else
 	echo "  Onwards you can access WaggleNet's service stack using the following:";
 	echo "        wn ";
 	echo "> Starting installation procedure.";
-
+	install;
+fi
 
 
 

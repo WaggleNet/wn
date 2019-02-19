@@ -3,7 +3,7 @@
 # Set the installation folder if not set
 : ${WN_PATH="~/wagglenet-wn"};
 
-if [ "$1" -eq "update" ]; then
+if [ "$1" = "update" ]; then
 	echo "Updating wn. Git pulling on myself."
 	cd $WN_PATH;
 	git pull --force;
