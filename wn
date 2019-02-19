@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Set the installation folder if not set
+: ${WN_PATH="~/wagglenet-wn"};
+
+if [ "$1" -eq "update" ]; then
+	echo "Updating wn. Git pulling on myself."
+	cd $WN_PATH;
+	git pull --force;
+	exit 0;
+fi
+
+source $WN_PATH/venv/bin/activate;
+python $WN_PATH/main.py;
