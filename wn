@@ -5,10 +5,9 @@
 : ${WN_PATH="$HOME/wagglenet-wn"};
 
 if [ "$1" = "update" ]; then
-	echo "Updating wn. Git pulling on myself."
+	echo "Updating wn by Git pulling on myself."
 	cd $WN_PATH;
-	git fetch --all;
-	git reset --hard origin/master;
+	sh install.sh;
 	exit 0;
 fi
 
