@@ -21,7 +21,7 @@ function install_cmd
 {
 	if [ ! -f "/usr/local/bin/wn" ]; then
 		echo "> Installing command wn. Might require your password.";
-		chmod a+x $WN_PATH/wn;
+		chmod +x $WN_PATH/wn;
 		sudo ln -s $WN_PATH/wn /usr/local/bin/wn;
 	else
 		echo "> wn command looks fine.";
@@ -31,7 +31,8 @@ function install_cmd
 function upgrade
 {
 	echo "> Upgrading wn. You might need to enter your Git password."
-	git pull;
+	git fetch --all;
+	git reset --hard origin/master;
 	echo "> Setting up the environment";
 	init_venv;
 	install_cmd;
