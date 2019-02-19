@@ -19,9 +19,9 @@ function init_venv
 
 function install_cmd
 {
+	chmod +x $WN_PATH/wn;
 	if [ ! -f "/usr/local/bin/wn" ]; then
 		echo "> Installing command wn. Might require your password.";
-		chmod +x $WN_PATH/wn;
 		sudo ln -s $WN_PATH/wn /usr/local/bin/wn;
 	else
 		echo "> wn command looks fine.";
