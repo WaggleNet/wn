@@ -1,0 +1,76 @@
+iam:
+  git: https://github.com/WaggleNet/WaggleNet-Backend-IAM.git
+  name: WaggleNet-Backend-IAM
+  description: Identity and Access Management System. Basically a user database and login page.
+  tools:
+    - python3.6
+  actions:
+    init_env: default
+    update_env: default
+    init_conf:
+      - function: configure_iam
+    init_db: default
+    update_env: default
+
+backplane:
+  git: https://github.com/WaggleNet/WaggleNet-Backplane.git
+  name: WaggleNet-Backplane
+  description: Data backplane API gateway for accessing the WaggleNet database.
+  requires:
+    - iam
+  tools:
+    - python3.6
+  actions:
+    init_env: default
+    update_env: default
+    init_conf:
+      - function: configure_backplane
+    init_db: default
+    update_env: default
+    
+devportal:
+  git: https://github.com/WaggleNet/WaggleNet-DevPortal.git
+  name: WaggleNet-DevPortal
+  description: Developer's Portal for managing devices and sensor types.
+  requires:
+    - iam
+    - backplane
+  tools:
+    - python3.6
+    - npm
+  actions:
+    init_env:
+      - pwd: backend/
+        commands:
+          - virtualenv -p python3.6 venv
+          - source venv/bin/activate
+          - pip install -r requirements.txt
+      - pwd: frontend/
+        commands:
+          - npm install
+    update_env:
+      - pwd: backend/
+        commands:
+          - source venv/bin/activate
+          - pip install -r requirements.txt
+      - pwd: frontend/
+        commands:
+          - npm install
+
+wharf:
+  git: https://github.com/WaggleNet/WaggleNet-Wharf.git
+  name: WaggleNet-Wharf
+  description: Real time data demuxer and serializer for sensor data packets.
+  tools:
+    - python3.6
+  requires:
+    - iam
+    - backplane
+
+broker:
+  git: https://github.com/WaggleNet/WaggleNet-Broker.git
+  name: WaggleNet-Broker
+  description: MQTT broker with WaggleNet IAM authentication.
+  requires:
+    - iam
+    - backplane
