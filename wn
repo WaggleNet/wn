@@ -10,6 +10,7 @@ if [ "$1" = "update" ]; then
 	sh install.sh;
 	exit 0;
 else
+	cd $WN_PATH;
 	source $WN_PATH/venv/bin/activate;
 	python $WN_PATH/main.py "$@";
 fi
