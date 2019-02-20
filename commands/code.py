@@ -49,7 +49,6 @@ def init(ctx, name, actions):
 def update(ctx, name, actions):
     check_config(ctx)
     projects = query_projects(name)
-    print(projects)
     if not projects:
         eprint('I don\'t know which projects you\'re referring to...')
         exit(2)
