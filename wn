@@ -12,4 +12,4 @@ if [ "$1" = "update" ]; then
 fi
 
 source $WN_PATH/venv/bin/activate;
-python $WN_PATH/main.py;
+python $WN_PATH/main.py "$@";

@@ -45,17 +45,21 @@ devportal:
           - virtualenv -p python3.6 venv
           - source venv/bin/activate
           - pip install -r requirements.txt
+        message: Initializing Python virtualenv...
       - pwd: frontend/
         commands:
           - npm install
+        message: Initializing Node JS package...
     update_env:
       - pwd: backend/
         commands:
           - source venv/bin/activate
           - pip install -r requirements.txt
+        message: Updating Python virtualenv...
       - pwd: frontend/
         commands:
           - npm install
+        message: Updating Node JS package...
 
 wharf:
   git: https://github.com/WaggleNet/WaggleNet-Wharf.git
