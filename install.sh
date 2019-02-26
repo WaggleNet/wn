@@ -18,6 +18,7 @@ set -e;
 
 function init_software
 {
+	set +e;
 	echo "> Checking required software...";
 	# Check if git is there
 	which git >> /dev/null;
@@ -37,6 +38,7 @@ function init_software
 		echo "-- Virtualenv is not installed. Installing...";
 		conda install -y virtualenv;
 	fi
+	set -e;
 }
 
 function init_venv
