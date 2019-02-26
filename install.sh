@@ -75,6 +75,7 @@ function upgrade
 
 function install
 {
+	init_software;
 	echo "> Installing wn into your home directory."
 	git clone https://github.com/WaggleNet/wn.git $WN_PATH;
 	cd $WN_PATH;
