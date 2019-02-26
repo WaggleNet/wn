@@ -7,7 +7,7 @@
 if [ "$1" = "update" ]; then
 	echo "Updating wn by Git pulling on myself."
 	cd $WN_PATH;
-	sh install.sh;
+	bash install.sh;
 	exit 0;
 else
 	cd $WN_PATH;
