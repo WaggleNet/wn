@@ -4,8 +4,40 @@
 : ${HOME=$(eval echo ~)};
 : ${WN_PATH="$HOME/wagglenet-wn"};
 
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac;;
+    CYGWIN*)    machine=Cygwin;;
+    MINGW*)     machine=MinGw;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+
 # Stop execution if stuff goes wrong
 set -e;
+
+function init_software
+{
+	echo "> Checking required software...";
+	# Check if git is there
+	which git >> /dev/null;
+	if [ $? != 0 ]; then
+		echo "-- Git not installed. Please install it.";
+		exit 1;
+	fi
+	# Check if conda is there
+	which conda >> /dev/null;
+	if [ $? != 0 ]; then
+		echo "-- Anaconda / Miniconda not installed. Please install it.";
+		exit 1;
+	fi
+	# Check if virtualenv is there
+	which virtualenv >> /dev/null;
+	if [ $? != 0 ]; then
+		echo "-- Virtualenv is not installed. Installing...";
+		conda install -y virtualenv;
+	fi
+}
 
 function init_venv
 {
