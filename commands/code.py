@@ -56,6 +56,7 @@ def update(ctx, name, actions):
     for i in projects:
         if not project_exists(i):
             eprint('> Project %s does not exist, skipped' & i)
+            continue
         eprint('> Updating project: {}'.format(i))
         available_actions = [
             a for a in list_actions(i).get('update', {})
@@ -83,6 +84,7 @@ def checkout(ctx, name, branch):
     for i in projects:
         if not project_exists(i):
             eprint('> Project %s does not exist, skipped' % i)
+            continue
         # Checkout the project
         checkout_project(i, branch)
     print('> All set!')
