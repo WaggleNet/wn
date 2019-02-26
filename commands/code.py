@@ -2,7 +2,8 @@ import click
 
 from services.config import check_config
 from services.shell import eprint
-from services.projects import query_projects, list_actions, run_action
+from services.projects import query_projects, list_actions, run_action, \
+    project_exists, checkout_project
 
 ACTION_PRIORITY = ['git', 'env', 'conf', 'db']
 
@@ -53,6 +54,8 @@ def update(ctx, name, actions):
         eprint('I don\'t know which projects you\'re referring to...')
         exit(2)
     for i in projects:
+        if not project_exist(i):
+            eprint('> Project %s does not exist, skipped' & i)
         eprint('> Updating project: {}'.format(i))
         available_actions = [
             a for a in list_actions(i).get('update', {})
@@ -65,4 +68,21 @@ def update(ctx, name, actions):
                     eprint(
                         '--> Action {} not implemented, skipped'.format(actn))
         print('> Project {} updated!'.format(i))
+    print('> All set!')
+
+
+@code_cmd.command()
+@click.argument('name')
+@click.argument('branch')
+@click.pass_context
+def checkout(ctx, name, branch):
+    projects = query_projects(name)
+    if not projects:
+        eprint('I don\'t know which projects you\'re referring to...')
+        exit(2)
+    for i in projects:
+        if not project_exist(i):
+            eprint('> Project %s does not exist, skipped' & i)
+        # Checkout the project
+        checkout_project(i, branch)
     print('> All set!')

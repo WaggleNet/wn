@@ -14,5 +14,4 @@ def git_pull(path):
 
 
 def git_checkout(path, branch):
-    with git_environ():
-        Git(path).checkout(branch)
+    Git(path).checkout(branch)

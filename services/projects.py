@@ -3,7 +3,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from .config import get_source_dir
-from .repo import git_clone, git_pull
+from .repo import git_clone, git_pull, git_checkout
 from .shell import execute
 
 # Initalize projects once and for all
@@ -100,3 +100,10 @@ def run_action(project: str, action_type: str, action_name: str):
             print(
                 'Action {} failed because:'.format(action_name),
                 e.__repr__())
+
+
+def checkout_project(project: str, branch: str):
+    try:
+        git_checkout(get_project_dir(project), branch)
+    except Exception as e:
+        print('Checkout failed because', e)
