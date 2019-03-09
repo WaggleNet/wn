@@ -81,5 +81,5 @@ broker:
 
 optiml:
   git: https://github.com/WaggleNet/Optiml.git
-  name: OptiML
+  name: Optiml
   description: Automated Managed Compute Pool and Project Management for ML.
