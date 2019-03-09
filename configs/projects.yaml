@@ -78,3 +78,8 @@ broker:
   requires:
     - iam
     - backplane
+
+optiml:
+  git: https://github.com/WaggleNet/Optiml.git
+  name: OptiML
+  description: Automated Managed Compute Pool and Project Management for ML.
