@@ -43,6 +43,10 @@ function init_software
 
 function init_venv
 {
+	if [ machine == "Linux" ]; then
+		echo "> Setting up Git credential cache.."
+		git config --global credential.helper "cache --timeout 300000";
+	fi
 	if [ ! -d "./venv" ]; then
 		echo "> Installing virtualenv...";
 		virtualenv -p python3 venv > /dev/null;

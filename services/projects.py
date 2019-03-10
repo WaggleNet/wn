@@ -105,5 +105,7 @@ def run_action(project: str, action_type: str, action_name: str):
 def checkout_project(project: str, branch: str):
     try:
         git_checkout(get_project_dir(project), branch)
+        return True
     except Exception as e:
-        print('Checkout failed because', e)
+        print('! Checkout failed because', e)
+        return False

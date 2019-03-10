@@ -86,5 +86,6 @@ def checkout(ctx, name, branch):
             eprint('> Project %s does not exist, skipped' % i)
             continue
         # Checkout the project
-        checkout_project(i, branch)
+        if checkout_project(i, branch):
+            eprint('> Project %s checked out to %s' % (i, branch))
     print('> All set!')
