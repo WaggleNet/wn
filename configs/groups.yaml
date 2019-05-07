@@ -4,5 +4,16 @@ serv:
   - wharf
   - broker
   - backplane
+  - mobile
+  - frontier
+  - libs
 ds:
   - optiml
+  - pyper
+sport:
+  - node
+  - router
+  - netnet
+  - pnp
+  - logger
+  - pcb
