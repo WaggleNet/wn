@@ -27,6 +27,21 @@ backplane:
       - function: configure_backplane
     init_db: default
     update_env: default
+
+frontier:
+  git: https://github.com/WaggleNet/WaggleNet-Frontier.git
+  name: WaggleNet-Frontier
+  description: Mobile Frontier Server for connecting end user to WaggleNet Cloud.
+  requires:
+    - iam
+    - backplane
+  actions:
+    init_env: default
+    update_env: default
+    init_conf:
+      - function: configure_frontier
+    update_conf:
+      - function: configure_frontier
     
 devportal:
   git: https://github.com/WaggleNet/WaggleNet-DevPortal.git
