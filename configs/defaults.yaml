@@ -1,13 +1,16 @@
 actions:
   init_env:
     - commands:
-      - virtualenv -p python3.6 venv
+      - virtualenv -p python3 venv
+      message: Creating Python environment...
+    - commands:
       - source venv/bin/activate
       - pip install -r requirements.txt
       message: Initializing Python environment...
   init_db:
     - commands:
       - source venv/bin/activate
+      - python manage.py createdb
       - python manage.py db upgrade
       message: Initializing Database schema...
   update_env:
