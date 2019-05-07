@@ -4,6 +4,7 @@ Click==7.0
 gitdb2==2.0.5
 GitPython==2.1.11
 idna==2.8
+pycryptodome==3.8.1
 PyYAML==3.13
 requests==2.21.0
 smmap2==2.0.5
