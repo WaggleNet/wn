@@ -5,6 +5,7 @@ from pathlib import Path
 from .config import get_source_dir
 from .repo import git_clone, git_pull, git_checkout
 from .shell import execute
+from .actions import Action
 
 # Initalize projects once and for all
 with open('configs/defaults.yaml') as fp:
@@ -15,6 +16,13 @@ with open('configs/groups.yaml') as fp:
 
 with open('configs/projects.yaml') as fp:
     PROJECTS = yaml.load(fp)
+
+with open('configs/docker-compose.yml') as fp:
+    COMPOSE = yaml.load(fp)
+    # Dump everything into the source folder
+    with open(Path(get_source_dir()) / 'docker-compose.yml', 'w') as f:
+        yaml.dump(COMPOSE, f)
+    
 
 # Also expand default actions
 for proj in PROJECTS.values():
@@ -92,14 +100,17 @@ def run_action(project: str, action_type: str, action_name: str):
                         cwd /= subaction['pwd']
                     execute('; '.join(subaction['commands']), False, cwd=cwd)
                 elif 'function' in subaction:  # Run Python function hook
-                    # TODO: Implement custom function hook
-                    print(
-                        'Action {} not implemented, results may be affected'
-                        .format(action_name))
+                    f = Action.get(subaction['function'])
+                    if f:
+                        f()
+                    else:
+                        print(
+                            'Action {} not implemented, results may be affected'
+                            .format(action_name))
         except Exception as e:
             print(
                 'Action {} failed because:'.format(action_name),
-                e.__repr__())
+                str(e))
 
 
 def checkout_project(project: str, branch: str):

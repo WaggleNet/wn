@@ -1,0 +1,53 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/postgres:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+  mqtt:
+    build: "./WaggleNet-Broker"
+    environment:
+      AUTH_HOSTNAME: iam
+      AUTH_HOSTPORT: 5001
+    ports:
+      - "1883:1883"
+  rabbit:
+    build: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  iam:
+    build: "./WaggleNet-Backend-IAM"
+    ports:
+      - "5001:80"
+    environment:
+      DB_URI: "postgres://db/iam"
+  backplane:
+    build: "./WaggleNet-Backplane"
+    ports:
+      - "5002:80"
+    environment:
+      DB_URI: "postgres://db/backplane"
+  devportal:
+    build: "./WaggleNet-DevPortal"
+    ports:
+      - "5050:80"
+    env_file:
+      - "./data/envs/devportal.env"
+    volumes:
+      - ./data/keys:/work/keys
+  frontier:
+    build: "./WaggleNet-Frontier"
+    ports:
+      - "5051:80"
+    env_file:
+      - "./data/envs/frontier.env"
+
+# env_file Example
+# IAM_PRIVATEKEY="/work/keys/devportal.pem"
+# IAM_APP_ID=""
+# SECRETKEY="2top90!"
+# WN_BACKPLANE_URI="http://backplane"
+# WN_IAM_URI="http://iam"
