@@ -1,4 +1,5 @@
 from Crypto.PublicKey import RSA
+from .config import get_source_dir
 
 
 def generate_keypairs(project):
@@ -24,8 +25,7 @@ class Registrar:
     def __call__(cls, f):
         cls.actions[f.__name__] = f
         return f
-    
+
     @classmethod
     def get(cls, name):
         return cls.actions.get(name)
-    

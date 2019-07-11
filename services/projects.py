@@ -1,11 +1,11 @@
+import shutil
 import yaml
 from collections import defaultdict
 from pathlib import Path
 
+from .actions import run_action
 from .config import get_source_dir
 from .repo import git_clone, git_pull, git_checkout
-from .shell import execute
-from .actions import Action
 
 # Initalize projects once and for all
 with open('configs/defaults.yaml') as fp:
@@ -17,12 +17,12 @@ with open('configs/groups.yaml') as fp:
 with open('configs/projects.yaml') as fp:
     PROJECTS = yaml.load(fp)
 
-with open('configs/docker-compose.yml') as fp:
-    COMPOSE = yaml.load(fp)
-    # Dump everything into the source folder
-    with open(Path(get_source_dir()) / 'docker-compose.yml', 'w') as f:
-        yaml.dump(COMPOSE, f)
-    
+with open('configs/bringup.yaml') as fp:
+    BRINGUP = yaml.load(fp)
+
+# Copy the content of copy_to_source over to source folder
+for pp in Path('configs/copy_to_source').glob('*'):
+    shutil.copy(pp, get_source_dir() + '/')
 
 # Also expand default actions
 for proj in PROJECTS.values():
@@ -68,7 +68,7 @@ def list_actions(key: str):
     return result
 
 
-def run_action(project: str, action_type: str, action_name: str):
+def run_op(project: str, action_type: str, action_name: str):
     project_dir = get_project_dir(project)
     actions = list_actions(project).get(action_type, {})
     if action_name != 'git' and action_name not in actions:
@@ -86,31 +86,13 @@ def run_action(project: str, action_type: str, action_name: str):
             git_pull(project_dir)
     else:
         action = actions[action_name]
-        counter = 0
+        project_dir = get_project_dir(project)
         try:
-            for subaction in action:
-                if 'message' in subaction:
-                    print('-->', subaction['message'])
-                else:
-                    counter += 1
-                    print('--> Running action step', counter, 'of', action_name)
-                if 'commands' in subaction:  # Run shell command
-                    cwd = project_dir
-                    if 'pwd' in subaction:
-                        cwd /= subaction['pwd']
-                    execute('; '.join(subaction['commands']), False, cwd=cwd)
-                elif 'function' in subaction:  # Run Python function hook
-                    f = Action.get(subaction['function'])
-                    if f:
-                        f()
-                    else:
-                        print(
-                            'Action {} not implemented, results may be affected'
-                            .format(action_name))
+            run_action(action, project_dir)
         except Exception as e:
             print(
                 'Action {} failed because:'.format(action_name),
-                str(e))
+                repr(e))
 
 
 def checkout_project(project: str, branch: str):

@@ -1,0 +1,88 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
+    ports:
+      - "15001:5432"
+    networks:
+      - wn_test_stack
+    environment:
+      POSTGRES_USER: "wagglenet"
+      POSTGRES_PASSWORD: "WiggleWaggle"
+      PGPASSWORD: 'WiggleWaggle'
+  mqtt:
+    build: "./WaggleNet-Broker"
+    environment:
+      AUTH_HOSTNAME: iam
+      AUTH_HOSTPORT: 5001
+    ports:
+      - "1883:1883"
+    networks:
+      - wn_test_stack
+  rabbit:
+    image: rabbitmq:3-management
+    ports:
+      - "15040:5672"
+      - "15041:15672"
+    networks:
+      - wn_test_stack
+  iam:
+    build: "./WaggleNet-Backend-IAM"
+    ports:
+      - "15002:80"
+    environment:
+      DB_URI: "postgres://wagglenet:WiggleWaggle@db/iam"
+      DEVMODE: 1
+      SECRET_KEY: "WiggleWaggle"
+    networks:
+      - wn_test_stack
+  backplane:
+    build: "./WaggleNet-Backplane"
+    ports:
+      - "15003:80"
+    environment:
+      DB_URI: "postgres://wagglenet:WiggleWaggle@db/backplane"
+    networks:
+      - wn_test_stack
+  devportal:
+    build: "./WaggleNet-DevPortal"
+    ports:
+      - "15010:80"
+    env_file:
+      - "./data/envs/devportal.env"
+    environment:
+      WN_IAM_URI: "http://iam:80"
+      WN_BACKPLANE_URI: "http://backplane:80"
+      SECRET_KEY: WiggleWaggle
+      # IAM_APP_ID in env_file
+      IAM_PRIVATEKEY: ./envs/devportal.env
+    volumes:
+      - ./data/keys:/work/keys
+    networks:
+      - wn_test_stack
+  frontier:
+    build: "./WaggleNet-Frontier"
+    ports:
+      - "15020:80"
+    env_file:
+      - "./data/envs/frontier.env"
+    environment:
+      WN_IAM_URI: "http://iam:80"
+      WN_BACKPLANE_URI: "http://backplane:80"
+      SECRET_KEY: WiggleWaggle
+      # IAM_APP_ID in env_file
+      IAM_PRIVATEKEY: ./envs/frontier.env
+    networks:
+      - wn_test_stack
+networks:
+  wn_test_stack:
+
+# env_file Example
+# IAM_PRIVATEKEY="/work/keys/devportal.pem"
+# IAM_APP_ID=""
+# SECRETKEY="2top90!"
+# WN_BACKPLANE_URI="http://backplane"
+# WN_IAM_URI="http://iam"

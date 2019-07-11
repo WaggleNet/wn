@@ -5,6 +5,7 @@ from services.config import read_conf, write_conf
 @click.group(invoke_without_command=True)
 @click.pass_context
 def config_cmd(ctx):
+    """Configure or reconfigure wn's settings"""
     if ctx.invoked_subcommand is None:
         conf = read_conf()
         conf['source'] = click.prompt(

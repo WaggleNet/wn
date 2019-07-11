@@ -19,7 +19,7 @@ def execute(command, permissive=True, **kwargs):
         print('Command failed!')
         raise OSError(
             'STDERR:\n'+stderr.decode()+'STDOUT:\n'+stdout.decode())
-                
+    return retcode
 
 
 def eprint(*args, **kwargs):

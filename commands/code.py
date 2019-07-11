@@ -2,7 +2,7 @@ import click
 
 from services.config import check_config
 from services.shell import eprint
-from services.projects import query_projects, list_actions, run_action, \
+from services.projects import query_projects, list_actions, run_op, \
     project_exists, checkout_project
 
 ACTION_PRIORITY = ['git', 'env', 'conf', 'db']
@@ -11,6 +11,7 @@ ACTION_PRIORITY = ['git', 'env', 'conf', 'db']
 @click.group(invoke_without_command=True)
 @click.pass_context
 def code_cmd(ctx):
+    """Check out, update and configure source code"""
     if ctx.invoked_subcommand is None:
         pass
     else:
@@ -35,7 +36,7 @@ def init(ctx, name, actions):
         for actn in ACTION_PRIORITY:
             if actn in available_actions:
                 try:
-                    run_action(i, 'init', actn)
+                    run_op(i, 'init', actn)
                 except NotImplementedError:
                     eprint(
                         '--> Action {} not implemented, skipped'.format(actn))
@@ -64,7 +65,7 @@ def update(ctx, name, actions):
         for actn in ACTION_PRIORITY:
             if actn in available_actions:
                 try:
-                    run_action(i, 'update', actn)
+                    run_op(i, 'update', actn)
                 except NotImplementedError:
                     eprint(
                         '--> Action {} not implemented, skipped'.format(actn))
