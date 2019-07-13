@@ -2,6 +2,7 @@ import shutil
 import time
 import yaml
 from collections import defaultdict
+from halo import Halo
 from pathlib import Path
 from progress.spinner import Spinner
 
@@ -132,17 +133,20 @@ def bringup_component(name: str,
         print('--> Component {} not defined, quitting.'.format(name))
         return
     # STEP 1: Check if pre-requisite has been met
-    print('--> Checking pre-requisites...', end='')
-    if 'precheck' in component:
-        precheck = component['precheck']
-        if precheck == 'healthcheck':
-            precheck = component['healthcheck']
-        prereq_met = all(
-            run_action(action, throw=False)
-            for action in precheck)
-    else:
-        prereq_met = True
-    print('Passed' if prereq_met else 'Not met.')
+    with Halo(text='Checking pre-requisites...', spinner='dots') as spin:
+        if 'precheck' in component:
+            precheck = component['precheck']
+            if precheck == 'healthcheck':
+                precheck = component['healthcheck']
+            prereq_met = all(
+                run_action(action, throw=False)
+                for action in precheck)
+        else:
+            prereq_met = True
+        if prereq_met:
+            spin.succeed('Already running')
+        else:
+            spin.fail('Prerequisites not met!')
     # STEP 2: Propagate to downwards connections
     if not prereq_met or cascade_check:
         for prereq in component.get('requires', []):
@@ -151,22 +155,29 @@ def bringup_component(name: str,
     if prereq_met:
         return
     # STEP 3: Execute the actions
-    print('--> Running the bringup actions for %s ...' % name)
-    bringup_actions = component.get('bringup')
-    if bringup_actions:
-        for action in bringup_actions:
-            run_action(action, throw=True)
+    with Halo(
+              text='Running the bringup actions for %s' % name,
+              spinner='dots') as spin:
+        bringup_actions = component.get('bringup')
+        if bringup_actions:
+            for action in bringup_actions:
+                run_action(action, throw=True)
+        spin.succeed('Successfully started %s' % name)
     # STEP 4: Run healthcheck until satisfied
     if 'healthcheck' in component:
-        spinner = Spinner('--> Wait for service to come online...')
-        healthcheck = component['healthcheck']
-        start_time = time.time()
-        while True:
-            spinner.next()
-            if all(run_action(action, throw=False) for action in healthcheck):
-                return  # Done
-            else:
-                if time.time() > start_time + timeout:
-                    raise TimeoutError('-!> Bringup failed, waited too long')
-                time.sleep(check_interval)
-        print('Done!')
+        with Halo(
+                  text='Wait for service to get ready...',
+                  spinner='dots') as spin:
+            healthcheck = component['healthcheck']
+            start_time = time.time()
+            while True:
+                if all(
+                       run_action(action, throw=False)
+                       for action in healthcheck):
+                    spin.succeed('Service %s is ready' % name)
+                    return  # Done
+                else:
+                    if time.time() > start_time + timeout:
+                        spin.fail('Timeout. Service may have failed.')
+                        raise TimeoutError('-!> Bringup failed (timeout)')
+                    time.sleep(check_interval)
