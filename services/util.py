@@ -14,7 +14,7 @@ def generate_keypairs(project):
     publickeystr = '  '.join(publickeystr.split('\n'))
     privatekeystr = private.export_key().decode()
     with open('{}/data/keys/{}.pem'.format(
-        get_source_dir(), project), 'w') as fp:
+              get_source_dir(), project), 'w') as fp:
         fp.write(privatekeystr)
     return publickeystr
 

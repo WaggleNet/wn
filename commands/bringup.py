@@ -1,11 +1,14 @@
 import click
 
+from services.projects import bringup_component
+
 
 @click.command()
 @click.argument('name')
 def up_cmd(name):
     """Bring up and run projects locally from source code"""
-    pass
+    bringup_component(name, True)
+    print('> Done bringing up.')
 
 
 @click.command()

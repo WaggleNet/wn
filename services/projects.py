@@ -1,7 +1,9 @@
 import shutil
+import time
 import yaml
 from collections import defaultdict
 from pathlib import Path
+from progress.spinner import Spinner
 
 from .actions import run_action
 from .config import get_source_dir
@@ -85,10 +87,14 @@ def run_op(project: str, action_type: str, action_name: str):
             print('--> Updating Git repository...')
             git_pull(project_dir)
     else:
-        action = actions[action_name]
+        actions = actions[action_name]
         project_dir = get_project_dir(project)
         try:
-            run_action(action, project_dir)
+            counter = 0
+            for action in actions:
+                counter += 1
+                print('--> Running step', counter)
+                run_action(action, project_dir)
         except Exception as e:
             print(
                 'Action {} failed because:'.format(action_name),
@@ -102,3 +108,65 @@ def checkout_project(project: str, branch: str):
     except Exception as e:
         print('! Checkout failed because', e)
         return False
+
+
+def bringup_component(name: str,
+                      cascade_check=True,
+                      timeout=60,
+                      check_interval=1):
+    """
+    Bring up the named component.
+
+    If a pre-check is defined, the bringup is only necessitated by the failure
+    of the pre-check. If a healthcheck is defined, the bringup is failed if
+    repeated healthcheck is timed out.
+
+    :param name: Name of component.
+    :param cascade_check: Cascade to depending tasks even if pre-check passes.
+    :param timeout: Max duration of failed healthchecks before giving up.
+    :param check_interval: Duration to wait before retrying healthcheck.
+    """
+    print('> Starting component {}'.format(name))
+    component = BRINGUP['components'].get(name)
+    if not component:
+        print('--> Component {} not defined, quitting.'.format(name))
+        return
+    # STEP 1: Check if pre-requisite has been met
+    print('--> Checking pre-requisites...', end='')
+    if 'precheck' in component:
+        precheck = component['precheck']
+        if precheck == 'healthcheck':
+            precheck = component['healthcheck']
+        prereq_met = all(
+            run_action(action, throw=False)
+            for action in precheck)
+    else:
+        prereq_met = True
+    print('Passed' if prereq_met else 'Not met.')
+    # STEP 2: Propagate to downwards connections
+    if not prereq_met or cascade_check:
+        for prereq in component.get('requires', []):
+            bringup_component(prereq, cascade_check, timeout, check_interval)
+    # OK, if we don't need to execute, quit now
+    if prereq_met:
+        return
+    # STEP 3: Execute the actions
+    print('--> Running the bringup actions for %s ...' % name)
+    bringup_actions = component.get('bringup')
+    if bringup_actions:
+        for action in bringup_actions:
+            run_action(action, throw=True)
+    # STEP 4: Run healthcheck until satisfied
+    if 'healthcheck' in component:
+        spinner = Spinner('--> Wait for service to come online...')
+        healthcheck = component['healthcheck']
+        start_time = time.time()
+        while True:
+            spinner.next()
+            if all(run_action(action, throw=False) for action in healthcheck):
+                return  # Done
+            else:
+                if time.time() > start_time + timeout:
+                    raise TimeoutError('-!> Bringup failed, waited too long')
+                time.sleep(check_interval)
+        print('Done!')

@@ -9,8 +9,10 @@ components:
     bringup:
       - type: shell
         commands:
+          - "rm -rf ./data/envs ./data/postgres ./data/keys"
           - "mkdir -p data/envs"
           - "mkdir -p data/keys"
+          - "mkdir -p data/postgres"
           - "touch data/envs/frontier.env"
           - "touch data/envs/devportal.env"
           - "touch data/envs/iam.env"

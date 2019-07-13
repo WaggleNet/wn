@@ -1,8 +1,23 @@
-from services.actions import Action
-
 import requests
 import psycopg2
-from requests.exceptions import HTTPError, ConnectionError
+from requests.exceptions import ConnectionError
+from pathlib import Path
+
+from services.actions import Action
+from services.config import get_source_dir
+
+
+@Action
+def check_deploy_folder():
+    src = Path(get_source_dir())
+    return all((src/'data'/i).exists() for i in ['envs', 'postgres', 'keys'])
+
+
+@Action
+def check_iam_appkeys():
+    apps = ['backplane', 'devportal', 'wharf', 'frontier']
+    src = Path(get_source_dir()) / 'data/keys'
+    return all((src/'{}.pem'.format(i)).exists() for i in apps)
 
 
 @Action
@@ -18,8 +33,8 @@ def check_db_connection():
 def check_reachability(url):
     try:
         resp = requests.get(url)
-        return resp.status_code == 200
-    except (HTTPError, ConnectionError):
+        return resp.status_code < 500
+    except (ConnectionError):
         return False
 
 
