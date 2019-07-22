@@ -8,7 +8,8 @@ iam:
     init_env: default
     update_env: default
     init_conf:
-      - function: configure_iam
+      - type: function
+        function: configure_iam
     init_db: default
     update_env: default
 
@@ -24,7 +25,8 @@ backplane:
     init_env: default
     update_env: default
     init_conf:
-      - function: configure_backplane
+      - type: function
+        function: configure_backplane
     init_db: default
     update_env: default
 
@@ -39,9 +41,11 @@ frontier:
     init_env: default
     update_env: default
     init_conf:
-      - function: configure_frontier
+      - type: function
+        function: configure_frontier
     update_conf:
-      - function: configure_frontier
+      - type: function
+        function: configure_frontier
 
 mobile:
   git: https://github.com/WaggleNet/WaggleNet-Mobile-App.git
@@ -75,22 +79,26 @@ devportal:
   actions:
     init_env:
       - pwd: backend/
+        type: shell
         commands:
           - virtualenv -p python3.6 venv
           - source venv/bin/activate
           - pip install -r requirements.txt
         message: Initializing Python virtualenv...
       - pwd: frontend/
+        type: shell
         commands:
           - npm install
         message: Initializing Node JS package...
     update_env:
       - pwd: backend/
+        type: shell
         commands:
           - source venv/bin/activate
           - pip install -r requirements.txt
         message: Updating Python virtualenv...
       - pwd: frontend/
+        type: shell
         commands:
           - npm install
         message: Updating Node JS package...

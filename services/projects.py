@@ -1,10 +1,14 @@
+import shutil
+import time
 import yaml
 from collections import defaultdict
+from halo import Halo
 from pathlib import Path
+from progress.spinner import Spinner
 
+from .actions import run_action
 from .config import get_source_dir
 from .repo import git_clone, git_pull, git_checkout
-from .shell import execute
 
 # Initalize projects once and for all
 with open('configs/defaults.yaml') as fp:
@@ -15,6 +19,13 @@ with open('configs/groups.yaml') as fp:
 
 with open('configs/projects.yaml') as fp:
     PROJECTS = yaml.load(fp)
+
+with open('configs/bringup.yaml') as fp:
+    BRINGUP = yaml.load(fp)
+
+# Copy the content of copy_to_source over to source folder
+for pp in Path('configs/copy_to_source').glob('*'):
+    shutil.copy(pp, get_source_dir() + '/')
 
 # Also expand default actions
 for proj in PROJECTS.values():
@@ -60,7 +71,7 @@ def list_actions(key: str):
     return result
 
 
-def run_action(project: str, action_type: str, action_name: str):
+def run_op(project: str, action_type: str, action_name: str):
     project_dir = get_project_dir(project)
     actions = list_actions(project).get(action_type, {})
     if action_name != 'git' and action_name not in actions:
@@ -77,29 +88,18 @@ def run_action(project: str, action_type: str, action_name: str):
             print('--> Updating Git repository...')
             git_pull(project_dir)
     else:
-        action = actions[action_name]
-        counter = 0
+        actions = actions[action_name]
+        project_dir = get_project_dir(project)
         try:
-            for subaction in action:
-                if 'message' in subaction:
-                    print('-->', subaction['message'])
-                else:
-                    counter += 1
-                    print('--> Running action step', counter, 'of', action_name)
-                if 'commands' in subaction:  # Run shell command
-                    cwd = project_dir
-                    if 'pwd' in subaction:
-                        cwd /= subaction['pwd']
-                    execute('; '.join(subaction['commands']), False, cwd=cwd)
-                elif 'function' in subaction:  # Run Python function hook
-                    # TODO: Implement custom function hook
-                    print(
-                        'Action {} not implemented, results may be affected'
-                        .format(action_name))
+            counter = 0
+            for action in actions:
+                counter += 1
+                print('--> Running step', counter)
+                run_action(action, project_dir)
         except Exception as e:
             print(
                 'Action {} failed because:'.format(action_name),
-                e.__repr__())
+                repr(e))
 
 
 def checkout_project(project: str, branch: str):
@@ -109,3 +109,75 @@ def checkout_project(project: str, branch: str):
     except Exception as e:
         print('! Checkout failed because', e)
         return False
+
+
+def bringup_component(name: str,
+                      cascade_check=True,
+                      timeout=60,
+                      check_interval=1):
+    """
+    Bring up the named component.
+
+    If a pre-check is defined, the bringup is only necessitated by the failure
+    of the pre-check. If a healthcheck is defined, the bringup is failed if
+    repeated healthcheck is timed out.
+
+    :param name: Name of component.
+    :param cascade_check: Cascade to depending tasks even if pre-check passes.
+    :param timeout: Max duration of failed healthchecks before giving up.
+    :param check_interval: Duration to wait before retrying healthcheck.
+    """
+    print('> Starting component {}'.format(name))
+    component = BRINGUP['components'].get(name)
+    if not component:
+        print('--> Component {} not defined, quitting.'.format(name))
+        return
+    # STEP 1: Check if pre-requisite has been met
+    with Halo(text='Checking pre-requisites...', spinner='dots') as spin:
+        if 'precheck' in component:
+            precheck = component['precheck']
+            if precheck == 'healthcheck':
+                precheck = component['healthcheck']
+            prereq_met = all(
+                run_action(action, throw=False)
+                for action in precheck)
+        else:
+            prereq_met = True
+        if prereq_met:
+            spin.succeed('Already running')
+        else:
+            spin.fail('Prerequisites not met!')
+    # STEP 2: Propagate to downwards connections
+    if not prereq_met or cascade_check:
+        for prereq in component.get('requires', []):
+            bringup_component(prereq, cascade_check, timeout, check_interval)
+    # OK, if we don't need to execute, quit now
+    if prereq_met:
+        return
+    # STEP 3: Execute the actions
+    with Halo(
+              text='Running the bringup actions for %s' % name,
+              spinner='dots') as spin:
+        bringup_actions = component.get('bringup')
+        if bringup_actions:
+            for action in bringup_actions:
+                run_action(action, throw=True)
+        spin.succeed('Successfully started %s' % name)
+    # STEP 4: Run healthcheck until satisfied
+    if 'healthcheck' in component:
+        with Halo(
+                  text='Wait for service to get ready...',
+                  spinner='dots') as spin:
+            healthcheck = component['healthcheck']
+            start_time = time.time()
+            while True:
+                if all(
+                       run_action(action, throw=False)
+                       for action in healthcheck):
+                    spin.succeed('Service %s is ready' % name)
+                    return  # Done
+                else:
+                    if time.time() > start_time + timeout:
+                        spin.fail('Timeout. Service may have failed.')
+                        raise TimeoutError('-!> Bringup failed (timeout)')
+                    time.sleep(check_interval)

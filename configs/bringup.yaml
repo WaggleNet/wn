@@ -1,0 +1,93 @@
+# The Bringup Description File. Controls bringup order and healthchecks
+
+projects:
+  iam: iam
+  backplane: backplane
+  broker: broker
+
+components:
+  init:
+    bringup:
+      - type: shell
+        commands:
+          - "rm -rf ./data/envs ./data/postgres ./data/keys"
+          - "mkdir -p data/envs"
+          - "mkdir -p data/keys"
+          - "mkdir -p data/postgres"
+          - "touch data/envs/frontier.env"
+          - "touch data/envs/devportal.env"
+          - "touch data/envs/iam.env"
+          - "touch data/envs/wharf.env"
+          - "touch data/envs/backplane.env"
+    teardown:
+      - type: shell
+        commands:
+          - "rm -rf ./data/envs ./data/postgres ./data/keys"
+    precheck:
+      - type: function
+        function: check_deploy_folder
+
+  db:
+    requires:
+      - init
+    bringup:
+      - type: compose
+        service: db
+    precheck: healthcheck
+    healthcheck:
+      - type: function
+        function: check_db_connection
+  
+  iam:
+    requires:
+      - db
+    bringup:
+      - type: compose
+        service: iam
+    precheck: healthcheck
+    healthcheck:
+      - type: function
+        function: check_iam
+  
+  iam_appkeys:
+    requires:
+      - iam
+    bringup:
+      - type: function
+        function: create_iam_app_keys
+    precheck:
+      - type: function
+        function: check_iam_appkeys
+  
+  backplane:
+    requires:
+      - iam_appkeys
+    bringup:
+      - type: compose
+        service: backplane
+    precheck: healthcheck
+    healthcheck:
+      - type: function
+        function: check_backplane
+  
+  devportal:
+    requires:
+      - iam_appkeys
+    bringup:
+      - type: compose
+        service: devportal
+    precheck: healthcheck
+    healthcheck:
+      - type: function
+        function: check_devportal
+
+  broker:
+    requires:
+      - iam
+    bringup:
+      - type: compose
+        service: broker
+    precheck: healthcheck
+    healthcheck:
+      - type: function
+        function: check_broker

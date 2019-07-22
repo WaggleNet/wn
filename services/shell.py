@@ -13,12 +13,13 @@ def execute(command, permissive=True, **kwargs):
         command, shell=True,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         **kwargs)
-    process.wait()
+    stderr, stdout = process.communicate()
     retcode = process.returncode
     if retcode and not permissive:
+        print('Command failed!')
         raise OSError(
-            'Command failed:'+b''.join(
-                process.stderr.readlines()).decode())
+            'STDERR:\n'+stderr.decode()+'STDOUT:\n'+stdout.decode())
+    return retcode
 
 
 def eprint(*args, **kwargs):
