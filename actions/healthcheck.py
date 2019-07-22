@@ -56,3 +56,14 @@ def check_devportal():
 @Action
 def check_frontier():
     return check_reachability('http://localhost:15020/healthcheck')
+
+
+@Action
+def check_broker():
+    from paho.mqtt.client import Client
+    try:
+        client = Client()
+        client.connect('localhost', 1883)
+        return True
+    except Exception as e:
+        return False

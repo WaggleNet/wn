@@ -10,12 +10,16 @@ def generate_keypairs(project):
     """
     private = RSA.generate(1024)
     publickeystr = private.publickey().export_key().decode()
-    # In IAM, public key string is double-space separated, not \n
-    publickeystr = '  '.join(publickeystr.split('\n'))
     privatekeystr = private.export_key().decode()
     with open('{}/data/keys/{}.pem'.format(
               get_source_dir(), project), 'w') as fp:
         fp.write(privatekeystr)
+    with open('{}/data/keys/{}.pub.pem'.format(
+        get_source_dir(), project
+    ), 'w') as fp:
+        fp.write(publickeystr)
+    # In IAM, public key string is double-space separated, not \n
+    publickeystr = '  '.join(publickeystr.split('\n'))
     return publickeystr
 
 

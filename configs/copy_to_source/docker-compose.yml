@@ -77,6 +77,16 @@ services:
       IAM_PRIVATEKEY: ./envs/frontier.env
     networks:
       - wn_test_stack
+  broker:
+    build: "./WaggleNet-Broker"
+    ports:
+      - "1883:1883"
+    environment:
+      AUTH_HOSTNAME: "iam"
+      AUTH_HOSTPORT: "80"
+    networks:
+      - wn_test_stack
+
 networks:
   wn_test_stack:
 

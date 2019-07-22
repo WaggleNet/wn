@@ -3,6 +3,7 @@
 projects:
   iam: iam
   backplane: backplane
+  broker: broker
 
 components:
   init:
@@ -79,4 +80,14 @@ components:
     healthcheck:
       - type: function
         function: check_devportal
-  
+
+  broker:
+    requires:
+      - iam
+    bringup:
+      - type: compose
+        service: broker
+    precheck: healthcheck
+    healthcheck:
+      - type: function
+        function: check_broker
