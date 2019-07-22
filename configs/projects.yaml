@@ -46,7 +46,26 @@ frontier:
     update_conf:
       - type: function
         function: configure_frontier
-    
+
+mobile:
+  git: https://github.com/WaggleNet/WaggleNet-Mobile-App.git
+  name: WaggleNet-Mobile-App
+  description: Mobile Application for end user interaction.
+  actions:
+    init_env:
+      - commands:
+          - npm install
+        message: Initializing Node JS package...
+    update_env:
+      - commands:
+          - npm install
+        message: Initializing Node JS package...
+
+libs:
+  git: https://github.com/WaggleNet/Interface_Libs.git
+  name: Interface_Libs
+  description: Shared libraries for interfacing with WaggleNet services.
+
 devportal:
   git: https://github.com/WaggleNet/WaggleNet-DevPortal.git
   name: WaggleNet-DevPortal
@@ -106,3 +125,51 @@ optiml:
   git: https://github.com/WaggleNet/Optiml.git
   name: Optiml
   description: Automated Managed Compute Pool and Project Management for ML.
+
+pyper:
+  git: https://github.com/WaggleNet/pyper.git
+  name: Pyper
+  description: Automated Data Pre-processing pipeline manager.
+
+node:
+  git: https://github.com/WaggleNet/WaggleNode.git
+  name: WaggleNode
+  description: Wireless application nodes for WaggleNetNet.
+
+router:
+  git: https://github.com/WaggleNet/WaggleRouter.git
+  name: WaggleRouter
+  description: Gateway node between WaggleNetNet and Wifi.
+
+netnet:
+  git: https://github.com/WaggleNet/WaggleNetNet.git
+  name: WaggleNetNet
+  description: Mesh networking protocol stack based on nRF24L01.
+
+pnp:
+  git: https://github.com/WaggleNet/WaggleNet_PnP.git
+  name: WaggleNet_PnP
+  description: Plug-and-play Sensor protocol suite.
+
+logger:
+  git: https://github.com/WaggleNet/WaggleNet-Datalogger.git
+  name: WaggleNet-Datalogger
+  description: Standalone data collection devices with Smart Sensors.
+
+pcb:
+  git: https://github.com/WaggleNet/WaggleNet-PCBs.git
+  name: WaggleNet-PCBs
+  description: Central repository for all PCB CAD & Gerber files.
+
+wn:
+  git: https://github.com/WaggleNet/wn.git
+  name: wn
+  description: Code for this tool :)
+  actions:
+    init_env: default
+
+tooling:
+  git: https://github.com/WaggleNet/factory-tooling.git
+  name: factory-tooling
+  description: Automation scripts for manufacturing and benchmarking hardware.
+
