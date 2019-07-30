@@ -15,7 +15,7 @@ def check_deploy_folder():
 
 @Action
 def check_iam_appkeys():
-    apps = ['backplane', 'devportal', 'wharf', 'frontier']
+    apps = ['backplane', 'erp', 'wharf', 'frontier']
     src = Path(get_source_dir()) / 'data/keys'
     return all((src/'{}.pem'.format(i)).exists() for i in apps)
 
