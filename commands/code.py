@@ -56,7 +56,7 @@ def update(ctx, name, actions):
         exit(2)
     for i in projects:
         if not project_exists(i):
-            eprint('> Project %s does not exist, skipped' & i)
+            eprint('> Project %s does not exist, skipped' % i)
             continue
         eprint('> Updating project: {}'.format(i))
         available_actions = [
