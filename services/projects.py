@@ -111,6 +111,17 @@ def checkout_project(project: str, branch: str):
         return False
 
 
+def list_bringup_components():
+    """
+    Print a list of all components on the screen
+    """
+    print('Choose NAME from the following components:\n')
+    print('{:<15}DESCRIPTION'.format('NAME'))
+    print('='*14 + ' ' + '='*50)
+    for name, component in BRINGUP['components'].items():
+        print('{:<15}{}'.format(name, component.get('description', 'N/A')))
+
+
 def bringup_component(name: str,
                       cascade_check=True,
                       timeout=60,
