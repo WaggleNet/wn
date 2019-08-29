@@ -29,6 +29,12 @@ services:
       - "15041:15672"
     networks:
       - wn_test_stack
+  redis:
+    image: redis
+    ports:
+      - "15043:6379"
+    networks:
+      - wn_test_stack
   iam:
     build: "./WaggleNet-Backend-IAM"
     ports:

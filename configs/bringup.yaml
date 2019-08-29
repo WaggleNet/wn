@@ -38,6 +38,17 @@ components:
       - type: function
         function: check_db_connection
   
+  redis:
+    requires:
+      - init
+    bringup:
+      - type: compose
+        service: redis
+    precheck: healthcheck
+    healthcheck:
+      - type: function
+        function: check_redis_connection
+  
   iam:
     requires:
       - db
