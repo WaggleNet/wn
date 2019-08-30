@@ -3,7 +3,7 @@ import click
 from services.config import check_config
 from services.shell import eprint
 from services.projects import query_projects, list_actions, run_op, \
-    project_exists, checkout_project
+    project_exists, checkout_project, print_project_list
 
 ACTION_PRIORITY = ['git', 'env', 'conf', 'db']
 
@@ -13,7 +13,8 @@ ACTION_PRIORITY = ['git', 'env', 'conf', 'db']
 def code_cmd(ctx):
     """Check out, update and configure source code"""
     if ctx.invoked_subcommand is None:
-        pass
+        print(code_cmd.get_help(ctx))
+        print_project_list()
     else:
         pass
 
@@ -23,6 +24,12 @@ def code_cmd(ctx):
 @click.argument('actions', nargs=-1)
 @click.pass_context
 def init(ctx, name, actions):
+    """Initializes source code projects.
+    
+    ACTION can be one of the following:
+    - git: Clone the source code from git
+    - env: Set up the environment for running the code
+    """
     check_config(ctx)
     projects = query_projects(name)
     if not projects:
@@ -49,6 +56,7 @@ def init(ctx, name, actions):
 @click.argument('actions', nargs=-1)
 @click.pass_context
 def update(ctx, name, actions):
+    """Update one or a group of projects."""
     check_config(ctx)
     projects = query_projects(name)
     if not projects:
@@ -78,6 +86,7 @@ def update(ctx, name, actions):
 @click.argument('branch')
 @click.pass_context
 def checkout(ctx, name, branch):
+    """Switch a project or a group of them to the specified Git branch."""
     projects = query_projects(name)
     if not projects:
         eprint('I don\'t know which projects you\'re referring to...')

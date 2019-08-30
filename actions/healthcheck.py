@@ -30,6 +30,18 @@ def check_db_connection():
     return True
 
 
+@Action
+def check_redis_connection():
+    import redis
+    rs = redis.Redis(port=15043)
+    try:
+        rs.get(1)
+    except (redis.exceptions.ConnectionError,
+            redis.exceptions.BusyLoadingError):
+        return False
+    return True
+
+
 def check_reachability(url):
     try:
         resp = requests.get(url)

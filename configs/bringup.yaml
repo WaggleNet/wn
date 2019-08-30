@@ -7,6 +7,7 @@ projects:
 
 components:
   init:
+    description: Basic preparations for all other components to happen.
     bringup:
       - type: shell
         commands:
@@ -28,6 +29,7 @@ components:
         function: check_deploy_folder
 
   db:
+    description: PostgreSQL Database for IAM and Backplane.
     requires:
       - init
     bringup:
@@ -38,9 +40,23 @@ components:
       - type: function
         function: check_db_connection
   
+  redis:
+    description: Redis Database for Storing Real-time Telemetry for Frontier and Wharf.
+    requires:
+      - init
+    bringup:
+      - type: compose
+        service: redis
+    precheck: healthcheck
+    healthcheck:
+      - type: function
+        function: check_redis_connection
+  
   iam:
+    description: WaggleNet Identity and Access Management System.
     requires:
       - db
+      - backplane
     bringup:
       - type: compose
         service: iam
@@ -50,6 +66,7 @@ components:
         function: check_iam
   
   iam_appkeys:
+    description: Register App IDs and provision Private Keys for each WaggleNet Application.
     requires:
       - iam
     bringup:
@@ -60,8 +77,9 @@ components:
         function: check_iam_appkeys
   
   backplane:
+    description: WaggleNet Backplane for data storage and querying
     requires:
-      - iam_appkeys
+      - init
     bringup:
       - type: compose
         service: backplane
@@ -71,8 +89,10 @@ components:
         function: check_backplane
   
   devportal:
+    description: WaggleNet Developer's Portal
     requires:
       - iam_appkeys
+      - backplane
     bringup:
       - type: compose
         service: devportal
@@ -82,6 +102,7 @@ components:
         function: check_devportal
 
   broker:
+    description: MQTT broker for real-time IoT Communication Needs
     requires:
       - iam
     bringup:

@@ -1,7 +1,7 @@
 iam:
   git: https://github.com/WaggleNet/WaggleNet-Backend-IAM.git
   name: WaggleNet-Backend-IAM
-  description: Identity and Access Management System. Basically a user database and login page.
+  description: Identity and Access Management System. Basically a user DB and login page.
   tools:
     - python3.6
   actions:
