@@ -32,7 +32,7 @@ def run_action(action, cwd=None, throw=True, **extras):
         elif atype == 'compose':
             service_name = action['service']
             if action.get('teardown'):
-                cli_command = 'docker-compose rm -f ' + service_name
+                cli_command = 'docker-compose rm -sf ' + service_name
             else:
                 cli_command = 'docker-compose up -d --build ' + service_name
             execute(cli_command, False, cwd=cwd)
