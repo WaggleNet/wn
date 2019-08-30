@@ -111,6 +111,16 @@ def checkout_project(project: str, branch: str):
         return False
 
 
+def print_project_list():
+    """
+    Print a list of all projects on the screen.
+    """
+    print('Choose NAME from the following components:\n')
+    print('{:<15}DESCRIPTION'.format('NAME'))
+    for name, component in PROJECTS.items():
+        print('{:<15}{}'.format(name, component.get('description', 'N/A')))
+
+
 def list_bringup_components():
     """
     Print a list of all components on the screen
