@@ -112,6 +112,27 @@ def checkout_project(project: str, branch: str):
         return False
 
 
+def print_project_list():
+    """
+    Print a list of all projects on the screen.
+    """
+    print('Choose NAME from the following components:\n')
+    print('{:<15}DESCRIPTION'.format('NAME'))
+    for name, component in PROJECTS.items():
+        print('{:<15}{}'.format(name, component.get('description', 'N/A')))
+
+
+def list_bringup_components():
+    """
+    Print a list of all components on the screen
+    """
+    print('Choose NAME from the following components:\n')
+    print('{:<15}DESCRIPTION'.format('NAME'))
+    print('='*14 + ' ' + '='*50)
+    for name, component in BRINGUP['components'].items():
+        print('{:<15}{}'.format(name, component.get('description', 'N/A')))
+
+
 def bringup_component(name: str,
                       cascade_check=True,
                       timeout=60,
@@ -182,3 +203,22 @@ def bringup_component(name: str,
                         spin.fail('Timeout. Service may have failed.')
                         raise TimeoutError('-!> Bringup failed (timeout)')
                     time.sleep(check_interval)
+
+
+def teardown_component(name: str):
+    # STEP 1: Bring down dependents of the component
+    for k, component in BRINGUP['components'].items():
+        if name in component.get('requires', []):
+            print('--> {} depends on {}.'.format(k, name))
+            teardown_component(k)
+    # STEP 2: Tear down the component itself
+    with Halo(text='Tearing down component %s'%name, spinner='dots') as spin:
+        actions = component.get('teardown')
+        if not actions:
+            action = {'teardown': True}
+            action.update(component['bringup'][0])
+            actions = [action]
+        if run_action(action, throw=False):
+            spin.succeed('{} is now down!'.format(name))
+        else:
+            spin.fail('Failed to bring down {}!'.format(name))
