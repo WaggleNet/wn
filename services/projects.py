@@ -24,8 +24,9 @@ with open('configs/bringup.yaml') as fp:
     BRINGUP = yaml.load(fp)
 
 # Copy the content of copy_to_source over to source folder
-for pp in Path('configs/copy_to_source').glob('*'):
-    shutil.copy(pp, get_source_dir() + '/')
+if get_source_dir():
+    for pp in Path('configs/copy_to_source').glob('*'):
+        shutil.copy(pp, get_source_dir() + '/')
 
 # Also expand default actions
 for proj in PROJECTS.values():
