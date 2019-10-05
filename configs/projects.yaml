@@ -173,3 +173,8 @@ tooling:
   name: factory-tooling
   description: Automation scripts for manufacturing and benchmarking hardware.
 
+slides:
+  git: https://github.com/WaggleNet/colloquium_slides.git
+  name: Colloquium_Slides
+  description: Presentation framework and slides for colloquiums.
+
