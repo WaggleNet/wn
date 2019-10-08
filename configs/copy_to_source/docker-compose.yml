@@ -65,7 +65,7 @@ services:
       WN_BACKPLANE_URI: "http://backplane:80"
       SECRET_KEY: WiggleWaggle
       # IAM_APP_ID in env_file
-      IAM_PRIVATEKEY: ./envs/erp.env
+      IAM_PRIVATEKEY: /work/keys/erp.env
     volumes:
       - ./data/keys:/work/keys
     networks:
@@ -81,7 +81,7 @@ services:
       WN_BACKPLANE_URI: "http://backplane:80"
       SECRET_KEY: WiggleWaggle
       # IAM_APP_ID in env_file
-      IAM_PRIVATEKEY: ./envs/frontier.env
+      IAM_PRIVATEKEY: /work/keys/frontier.env
     networks:
       - wn_test_stack
   broker:
