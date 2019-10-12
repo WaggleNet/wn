@@ -100,6 +100,19 @@ components:
     healthcheck:
       - type: function
         function: check_devportal
+    
+  frontier:
+    description: Backend for WaggleNet Mobile & Research App
+    requires:
+      - iam_appkeys
+      - backplane
+    bring:
+      - type: compose
+        service: frontier
+    precheck: healthcheck
+    healthcheck:
+      - type: function
+        function: check_frontier
 
   broker:
     description: MQTT broker for real-time IoT Communication Needs
