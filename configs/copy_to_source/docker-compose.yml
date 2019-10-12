@@ -83,6 +83,8 @@ services:
       SECRET_KEY: WiggleWaggle
       # IAM_APP_ID in env_file
       IAM_PEM: /work/keys/frontier.pem
+    volumes:
+      - ./data/keys:/work/keys
     networks:
       - wn_test_stack
   broker:
