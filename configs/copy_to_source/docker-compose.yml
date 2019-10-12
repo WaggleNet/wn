@@ -62,6 +62,7 @@ services:
       - "./data/envs/erp.env"
     environment:
       WN_IAM_URI: "http://iam:80"
+      WN_IAM_REDIRECT_URI: "http://localhost:15002"
       WN_BACKPLANE_URI: "http://backplane:80"
       SECRET_KEY: WiggleWaggle
       # IAM_APP_ID in env_file
