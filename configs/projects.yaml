@@ -149,12 +149,17 @@ netnet:
 pnp:
   git: https://github.com/WaggleNet/WaggleNet_PnP.git
   name: WaggleNet_PnP
-  description: Plug-and-play Sensor protocol suite.
+  description: Plug-and-play (Smart Sensor) protocol suite.
 
 logger:
   git: https://github.com/WaggleNet/WaggleNet-Datalogger.git
   name: WaggleNet-Datalogger
   description: Standalone data collection devices with Smart Sensors.
+
+sensors:
+  git: https://github.com/WaggleNet/WaggleNet-Smart-Sensors.git
+  name: WaggleNet-Smart-Sensors
+  description: Source code and schema files for Smart Sensor products
 
 pcb:
   git: https://github.com/WaggleNet/WaggleNet-PCBs.git
