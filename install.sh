@@ -58,7 +58,7 @@ function init_venv
 function install_cmd
 {
 	chmod +x $WN_PATH/wn;
-	if [ ! -f "/usr/local/bin/wn" ]; then
+	if [ ! -f "~/bin/wn" ] && [ ! -f "~/.local/bin/wn" ]; then
 		echo "> Installing command wn. Might require your password.";
 		mkdir -p ~/bin;
 		mkdir -p ~/.local/bin;
