@@ -80,6 +80,7 @@ components:
     description: WaggleNet Backplane for data storage and querying
     requires:
       - init
+      - db
     bringup:
       - type: compose
         service: backplane
