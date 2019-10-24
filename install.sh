@@ -60,7 +60,11 @@ function install_cmd
 	chmod +x $WN_PATH/wn;
 	if [ ! -f "/usr/local/bin/wn" ]; then
 		echo "> Installing command wn. Might require your password.";
-		sudo ln -s $WN_PATH/wn /usr/local/bin/wn;
+		mkdir -p ~/bin;
+		mkdir -p ~/.local/bin;
+		
+		ln -s $WN_PATH/wn $(realpath ~/bin/wn);
+		ln -s $WN_PATH/wn $(realpath ~/.local/bin/wn);
 	else
 		echo "> wn command looks fine.";
 	fi
