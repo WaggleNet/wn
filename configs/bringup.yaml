@@ -16,7 +16,7 @@ components:
           - "mkdir -p data/keys"
           - "mkdir -p data/postgres"
           - "touch data/envs/frontier.env"
-          - "touch data/envs/devportal.env"
+          - "touch data/envs/erp.env"
           - "touch data/envs/iam.env"
           - "touch data/envs/wharf.env"
           - "touch data/envs/backplane.env"
