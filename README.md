@@ -9,7 +9,7 @@ Introducing the heavenly WaggleNet command - `wn`. It's a bold automation projec
 Sorry, Windows not supported. For better experience you can use [Ubuntu on Windows](https://tutorials.ubuntu.com/tutorial/tutorial-ubuntu-on-windows#0). Now you have Linux or Unix (pronouced: "Mac"). Give this command a try (Change `bash` to `zsh` if that's what you use):
 
 ```bash
-bash -c "$(curl -sSL https://raw.githubusercontent.com/WaggleNet/wn/master/install.sh?$(date +%s))"
+bash -c "$(curl -sSL https://raw.githubusercontent.com/WaggleNet/wn/master/install.sh\?$(date +%s))"
 ```
 
 And follow the instruction.
