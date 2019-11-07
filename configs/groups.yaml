@@ -17,4 +17,4 @@ sport:
   - pnp
   - logger
   - pcb
-  - sensor
+  - sensors
