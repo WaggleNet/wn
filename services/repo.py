@@ -5,7 +5,7 @@ from .config import git_environ
 
 def git_clone(path, url, branch='master'):
     with git_environ():
-        Git(path).clone(url, branch=branch)
+        Git(path).clone(url, branch=branch, recursive=True)
 
 
 def git_pull(path):
