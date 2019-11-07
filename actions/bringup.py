@@ -32,5 +32,8 @@ def create_iam_app_keys():
         'frontier': create_app('frontier', 'http://localhost:15020/callback')
     }
     src = get_source_dir()
+    data = {
+        'appids': appids
+    }
     with open('{}/data/envs/env.yaml'.format(src), 'w') as f:
-        yaml.dump(appids, f)
+        yaml.dump(data, f)
