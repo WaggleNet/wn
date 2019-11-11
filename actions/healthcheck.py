@@ -79,3 +79,8 @@ def check_broker():
         return True
     except Exception as e:
         return False
+
+
+@Action
+def check_mockdata():
+    return False

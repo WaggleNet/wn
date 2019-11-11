@@ -1,5 +1,6 @@
 import requests
 import yaml
+from pathlib import Path
 
 from services.actions import Action
 from services.util import generate_keypairs
@@ -37,3 +38,10 @@ def create_iam_app_keys():
     }
     with open('{}/data/envs/env.yaml'.format(src), 'w') as f:
         yaml.dump(data, f)
+
+
+@Action
+def insert_mockdata():
+    src = Path(get_source_dir()) / 'data' / 'mock_data.yaml'
+    if not src.exists():
+        raise FileNotFoundError('You need a mock_data.yaml placed under the data/ folder.')
