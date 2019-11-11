@@ -1,6 +1,7 @@
 import requests
 import yaml
 from pathlib import Path
+from requests.exceptions import HTTPError
 
 from iam import IAM
 from backplane import Backplane
@@ -58,12 +59,17 @@ def insert_mockdata():
     iam = IAM("http://localhost:15002", appid, None,
               str(Path(get_source_dir()) / 'data/keys/erp.pem'))
     for user in data.get('users', {}).values():
-        user_id = iam.user_register(user['name'], user['email'], user['password'])['result']
-        user['user_id'] = user_id
-        # Now it's a user. We'll start promoting it to other roles.
-        if user.get('role') in ['dev', 'member', 'admin']:
-            iam.set_user_profile(user_id, rule='dev')
-        if user.get('role') in ['member', 'admin']:
-            iam.set_user_profile(user_id, rule='member')
-        if user.get('role') in ['admin']:
-            iam.set_user_profile(user_id, rule='admin')
+        try:
+            user_id = iam.user_register(user['name'], user['email'], user['password'])['result']
+            user['user_id'] = user_id
+            # Now it's a user. We'll start promoting it to other roles.
+            if user.get('role') in ['dev', 'member', 'admin']:
+                iam.set_user_profile(user_id, rule='dev')
+            if user.get('role') in ['member', 'admin']:
+                iam.set_user_profile(user_id, rule='member')
+            if user.get('role') in ['admin']:
+                iam.set_user_profile(user_id, rule='admin')
+        except HTTPError as e:
+            if e.response.status_code == 403:
+                print('\n-!> Failed creating [%s]: exists' % user['name'])
+        
