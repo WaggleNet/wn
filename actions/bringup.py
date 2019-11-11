@@ -64,12 +64,13 @@ def insert_mockdata():
             user['user_id'] = user_id
             # Now it's a user. We'll start promoting it to other roles.
             if user.get('role') in ['dev', 'member', 'admin']:
-                iam.set_user_profile(user_id, rule='dev')
+                iam.set_user_profile(user_id, role='dev')
             if user.get('role') in ['member', 'admin']:
-                iam.set_user_profile(user_id, rule='member')
+                iam.set_user_profile(user_id, role='member')
             if user.get('role') in ['admin']:
-                iam.set_user_profile(user_id, rule='admin')
+                iam.set_user_profile(user_id, role='admin')
         except HTTPError as e:
             if e.response.status_code == 403:
                 print('\n-!> Failed creating [%s]: exists' % user['name'])
+    
         
