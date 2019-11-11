@@ -44,6 +44,7 @@ services:
       DEVMODE: 1
       SECRET_KEY: "WiggleWaggle"
       WN_BACKPLANE_URI: "http://backplane:80"
+      NOAWS: 1
     networks:
       - wn_test_stack
   backplane:

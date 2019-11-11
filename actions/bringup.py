@@ -2,6 +2,9 @@ import requests
 import yaml
 from pathlib import Path
 
+from iam import IAM
+from backplane import Backplane
+
 from services.actions import Action
 from services.util import generate_keypairs
 from services.config import get_source_dir
@@ -45,3 +48,22 @@ def insert_mockdata():
     src = Path(get_source_dir()) / 'data' / 'mock_data.yaml'
     if not src.exists():
         raise FileNotFoundError('You need a mock_data.yaml placed under the data/ folder.')
+    with open(src) as f:
+        data = yaml.load(f)
+    # Log into IAM as ERP
+    envyaml_path = Path(get_source_dir()) / 'data/envs/env.yaml'
+    with open(envyaml_path) as f:
+        envs = yaml.load(f)
+    appid = envs['appids']['erp']
+    iam = IAM("http://localhost:15002", appid, None,
+              str(Path(get_source_dir()) / 'data/keys/erp.pem'))
+    for user in data.get('users', {}).values():
+        user_id = iam.user_register(user['name'], user['email'], user['password'])['result']
+        user['user_id'] = user_id
+        # Now it's a user. We'll start promoting it to other roles.
+        if user.get('role') in ['dev', 'member', 'admin']:
+            iam.set_user_profile(user_id, rule='dev')
+        if user.get('role') in ['member', 'admin']:
+            iam.set_user_profile(user_id, rule='member')
+        if user.get('role') in ['admin']:
+            iam.set_user_profile(user_id, rule='admin')

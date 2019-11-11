@@ -130,12 +130,11 @@ components:
   mockdata:
     description: Insert mock data into the database using mock_data.yaml.
     requires:
-      - iam
+      - iam_appkeys
       - backplane
     bringup:
       - type: function
         function: insert_mockdata
-    precheck: healthcheck
-    healthcheck:
+    precheck:
       - type: function
         function: check_mockdata
