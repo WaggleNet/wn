@@ -4,7 +4,7 @@ from pathlib import Path
 from requests.exceptions import HTTPError
 
 from iam import IAM
-from backplane import Backplane
+from backplane import Backplane, Node, Router, Site, DeviceLifecycle
 
 from services.actions import Action
 from services.util import generate_keypairs
@@ -58,6 +58,7 @@ def insert_mockdata():
     appid = envs['appids']['erp']
     iam = IAM("http://localhost:15002", appid, None,
               str(Path(get_source_dir()) / 'data/keys/erp.pem'))
+    backplane = Backplane('http://localhost:15003')
     for user in data.get('users', {}).values():
         try:
             user_id = iam.user_register(user['name'], user['email'], user['password'])['result']
@@ -71,6 +72,90 @@ def insert_mockdata():
                 iam.set_user_profile(user_id, role='admin')
         except HTTPError as e:
             if e.response.status_code == 403:
-                print('\n-!> Failed creating [%s]: exists' % user['name'])
-    
-        
+                print('\n-!> Skipping user [%s]: exists' % user['name'])
+                
+    for lcodename, lifecycle in data.get('devcats').items():
+        # First we check if that is actually there
+        if DeviceLifecycle(backplane).list(codename=lcodename):
+            print('\n-!> Skipping lifecycle [%s]: exists' % lcodename)
+            continue
+        try:
+            lifecycle['codename'] = lcodename
+            # FIXME: Workaround. Remove as appropriate.
+            lifecycle['created'] = None
+            lifecycle['status'] = 'SUPPORTED'
+            lifecycle['planned_eol'] = None
+            l = DeviceLifecycle(backplane, True, **lifecycle)
+            l.save()
+        except Exception as e:
+            print('\n-!> Failed to create lifecycle [%s]: %s' % (lcodename, e))
+
+    for site_name, site in data.get('sites', {}).items():
+        # First we check if the site is actually there
+        if Site(backplane).list(name=site_name):
+            print('\n-!> Skipping site [%s]: exists' % site_name)
+            continue
+        try:
+            # Substitude the owner id
+            owner = site.pop('owner', None)
+            if owner:
+                site['owner_id'] = data.get('users', {}).get(owner, {}).get('user_id')
+            site['name'] = site_name
+            # FIXME: Workaround. Remove as appropriate.
+            site['created'] = None
+            site['appcat_id'] = None
+            s = Site(backplane, True, **site)
+            s.save()
+            site['site_id'] = s._id
+        except Exception as e:
+            print('\n-!> Failed to create site [%s]: %s' % (site_name, e))
+
+    for device_id, node in data.get('nodes', {}).items():
+        # First we check if the node is actually there
+        if Node(backplane).list(device_id=device_id):
+            print('\n-!> Skipping node [%s]: exists' % hex(device_id))
+            continue
+        try:
+            node['owner_id'] = None
+            node['site_id'] = None
+            # Substitude the owner id
+            owner = node.pop('owner', None)
+            if owner:
+                node['owner_id'] = data.get('users', {}).get(owner, {}).get('user_id')
+            # Substitude the site id
+            site = node.pop('site', None)
+            if site:
+                node['site_id'] = data.get('sites', {}).get(site, {}).get('site_id')
+            node['device_id'] = device_id
+            # FIXME: Workaround. Remove as appropriate.
+            node['last_spotted'] = None
+            node['created'] = None
+            n = Node(backplane, True, **node)
+            n.save()
+            node['node_id'] = n._id
+        except Exception as e:
+            print('\n-!> Failed to create node [%s]: %s' % (hex(device_id), e))
+
+    for device_id, router in data.get('routers', {}).items():
+        # First we check if the router is actually there
+        if Router(backplane).list(device_id=device_id):
+            print('\n-!> Skipping router [%s]: exists' % hex(device_id))
+            continue
+        try:
+            router['owner_id'] = None
+            # Substitude the owner id
+            owner = router.pop('owner', None)
+            if owner:
+                router['owner_id'] = data.get('users', {}).get(owner, {}).get('user_id')
+            router['device_id'] = device_id
+            # FIXME: Workaround. Remove as appropriate.
+            router['last_spotted'] = None
+            router['created'] = None
+            n = Router(backplane, True, **router)
+            n.save()
+            router['router_id'] = n._id
+        except Exception as e:
+            print('\n-!> Failed to create router [%s]: %s' % (hex(device_id), e))
+    dest = Path(get_source_dir()) / 'data' / 'mock_data.results.yaml'
+    with open(dest, 'w') as fp:
+        yaml.dump(data, fp)
