@@ -126,3 +126,15 @@ components:
     healthcheck:
       - type: function
         function: check_broker
+    
+  mockdata:
+    description: Insert mock data into the database using mock_data.yaml.
+    requires:
+      - iam_appkeys
+      - backplane
+    bringup:
+      - type: function
+        function: insert_mockdata
+    precheck:
+      - type: function
+        function: check_mockdata

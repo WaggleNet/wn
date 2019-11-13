@@ -43,3 +43,7 @@ urllib3==1.24.2
 virtualenv==16.4.3
 websocket-client==0.56.0
 wrapt==1.11.1
+
+--extra-index-url=https://pypi.wagglenet.org/simple
+iamlib==1.0.8
+backplanelib==1.0.10
