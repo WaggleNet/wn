@@ -35,7 +35,7 @@ def create_iam_app_keys():
         'backplane': create_app('backplane'),
         'erp': create_app('erp', 'http://localhost:15010/callback'),
         'wharf': create_app('wharf'),
-        'frontier': create_app('frontier', 'http://localhost:15020/callback')
+        'wagglenet': create_app('wagglenet', 'http://localhost:15020/callback')
     }
     src = get_source_dir()
     data = {
