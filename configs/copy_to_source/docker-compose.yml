@@ -82,6 +82,7 @@ services:
       WN_IAM_URI: "http://iam:80"
       WN_BACKPLANE_URI: "http://backplane:80"
       SECRET_KEY: WiggleWaggle
+      REDIS_URL: "redis://redis"
       # IAM_APP_ID in env_file
       IAM_PEM: /work/keys/wagglenet.pem
     volumes:
