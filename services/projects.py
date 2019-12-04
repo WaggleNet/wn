@@ -213,9 +213,13 @@ def bringup_component(name: str,
 
 
 def teardown_component(name: str):
+    component = BRINGUP['components'].get(name)
+    if not component:
+        print('--> Component {} not defined, quitting.'.format(name))
+        return
     # STEP 1: Bring down dependents of the component
-    for k, component in BRINGUP['components'].items():
-        if name in component.get('requires', []):
+    for k, c in BRINGUP['components'].items():
+        if name in c.get('requires', []):
             print('--> {} depends on {}.'.format(k, name))
             teardown_component(k)
     # STEP 2: Tear down the component itself
