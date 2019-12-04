@@ -84,3 +84,15 @@ def check_broker():
 @Action
 def check_mockdata():
     return False
+
+
+@Action
+def check_rabbit():
+    from pika import BlockingConnection, ConnectionParameters
+    try:
+        params = ConnectionParameters(host='localhost', port=15040)
+        conn = BlockingConnection(params)
+        assert conn.is_open
+        return True
+    except Exception:
+        return False

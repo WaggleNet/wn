@@ -4,6 +4,8 @@ projects:
   iam: iam
   backplane: backplane
   broker: broker
+  frontier: frontier
+  wharf: wharf
 
 components:
   init:
@@ -138,3 +140,24 @@ components:
     precheck:
       - type: function
         function: check_mockdata
+  
+  rabbit:
+    description: RabbitMQ message queue.
+    bringup:
+      - type: compose
+        service: rabbit
+    precheck: healthcheck
+    healthcheck:
+      - type: function
+        function: check_rabbit
+  
+  wharf:
+    description: Stream data processor and sensor data parser.
+    requires:
+      - iam
+      - backplane
+      - redis
+      - rabbit
+    bringup:
+      - type: compose
+        service: wharf

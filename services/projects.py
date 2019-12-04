@@ -35,6 +35,9 @@ for proj in PROJECTS.values():
         if actions[i] == 'default':
             actions[i] = DEFAULTS['actions'][i]
 
+# Track components already brought up so recursion is cleaner
+already_brought_up = set()
+
 
 def list_all_projects():
     return [{
@@ -149,6 +152,9 @@ def bringup_component(name: str,
     :param timeout: Max duration of failed healthchecks before giving up.
     :param check_interval: Duration to wait before retrying healthcheck.
     """
+    if name in already_brought_up:
+        return
+    already_brought_up.add(name)
     print('> Starting component {}'.format(name))
     component = BRINGUP['components'].get(name)
     if not component:
@@ -164,7 +170,8 @@ def bringup_component(name: str,
                 run_action(action, throw=False)
                 for action in precheck)
         else:
-            prereq_met = True
+            # Anything that does not have a prereq should always be run
+            prereq_met = False
         if prereq_met:
             spin.succeed('Already running')
         else:
@@ -206,9 +213,13 @@ def bringup_component(name: str,
 
 
 def teardown_component(name: str):
+    component = BRINGUP['components'].get(name)
+    if not component:
+        print('--> Component {} not defined, quitting.'.format(name))
+        return
     # STEP 1: Bring down dependents of the component
-    for k, component in BRINGUP['components'].items():
-        if name in component.get('requires', []):
+    for k, c in BRINGUP['components'].items():
+        if name in c.get('requires', []):
             print('--> {} depends on {}.'.format(k, name))
             teardown_component(k)
     # STEP 2: Tear down the component itself
