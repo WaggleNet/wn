@@ -80,6 +80,7 @@ services:
       - "./data/envs/wagglenet.env"
     environment:
       WN_IAM_URI: "http://iam:80"
+      REDIS_URL: "redis://redis"
       WN_BACKPLANE_URI: "http://backplane:80"
       SECRET_KEY: WiggleWaggle
       # IAM_APP_ID in env_file
