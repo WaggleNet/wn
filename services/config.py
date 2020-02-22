@@ -3,6 +3,7 @@ import click
 from os import environ
 from pathlib import Path
 from contextlib import contextmanager
+import os
 
 from .shell import eprint
 
@@ -23,6 +24,25 @@ def write_conf(conf):
 
 def get_source_dir():
     return read_conf().get('source')
+
+
+def recommend_project_folder():
+    """
+    Put the project under one of these places.
+    - ~/Desktop/WaggleNet
+    - ~/WaggleNet
+    """
+    pp = Path.home()
+    if (pp / 'Desktop').exists():
+        result = pp / 'Desktop' / 'WaggleNet'
+    else:
+        result = pp / 'WaggleNet'
+    return result
+
+
+def check_path_valid(path):
+    """Returns if the current path is a valid one"""
+    return os.path.exists(path)
 
 
 def check_config(ctx=None):
