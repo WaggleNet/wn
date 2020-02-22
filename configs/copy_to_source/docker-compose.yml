@@ -42,6 +42,7 @@ services:
     environment:
       DB_URI: "postgres://wagglenet:WiggleWaggle@db/iam"
       DEVMODE: 1
+      NOAWS: 1
       SECRET_KEY: "WiggleWaggle"
       WN_BACKPLANE_URI: "http://backplane:80"
       NOAWS: 1
@@ -80,6 +81,7 @@ services:
       - "./data/envs/wagglenet.env"
     environment:
       WN_IAM_URI: "http://iam:80"
+      REDIS_URL: "redis://redis"
       WN_BACKPLANE_URI: "http://backplane:80"
       SECRET_KEY: WiggleWaggle
       REDIS_URL: "redis://redis"
