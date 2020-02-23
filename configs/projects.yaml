@@ -180,6 +180,22 @@ tooling:
 
 slides:
   git: https://github.com/WaggleNet/colloquium_slides.git
-  name: Colloquium_Slides
+  name: colloquium_slides
   description: Presentation framework and slides for colloquiums.
+  actions:
+    init_env:
+      - commands:
+          - npm install
+        message: Initializing Node JS package...
+    update_env:
+      - commands:
+          - npm install
+        message: Initializing Node JS package...
 
+bridge:
+  git: https://github.com/WaggleNet/WaggleNet-Broker-Bridge
+  name: WaggleNet-Broker-Bridge
+  description: Bridging agent from MQTT to RabbitMQ
+  actions:
+    init_env: default
+    update_env: default
