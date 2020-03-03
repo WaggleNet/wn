@@ -1,6 +1,7 @@
 serv:
   - iam
   - devportal
+  - bridge
   - wharf
   - broker
   - backplane

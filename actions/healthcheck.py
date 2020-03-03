@@ -71,6 +71,11 @@ def check_frontier():
 
 
 @Action
+def check_influx():
+    return check_reachability('http://localhost:15044')
+    
+
+@Action
 def check_broker():
     from paho.mqtt.client import Client
     try:

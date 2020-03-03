@@ -5,6 +5,7 @@ projects:
   backplane: backplane
   broker: broker
   frontier: frontier
+  bridge: bridge
   wharf: wharf
 
 components:
@@ -83,6 +84,8 @@ components:
     requires:
       - init
       - db
+      - redis
+      - influx
     bringup:
       - type: compose
         service: backplane
@@ -150,6 +153,16 @@ components:
     healthcheck:
       - type: function
         function: check_rabbit
+
+  bridge:
+    description: Data stream adapter that forwards MQTT traffic over to RabbitMQ.
+    requires:
+    - iam
+    - rabbit
+    - broker
+    bringup:
+    - type: compose
+      service: bridge
   
   wharf:
     description: Stream data processor and sensor data parser.
@@ -157,6 +170,7 @@ components:
       - iam
       - backplane
       - redis
+      - influx
       - rabbit
     bringup:
       - type: compose

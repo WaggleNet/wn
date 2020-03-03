@@ -103,6 +103,17 @@ devportal:
           - npm install
         message: Updating Node JS package...
 
+bridge:
+  git: https://github.com/WaggleNet/WaggleNet-Broker-Bridge.git
+  name: WaggleNet-Broker-Bridge
+  description: Data stream adapter that forwards MQTT traffic over to RabbitMQ.
+  tools:
+    - python3.6
+  requires:
+    - broker
+    - iam
+    - backplane
+
 wharf:
   git: https://github.com/WaggleNet/WaggleNet-Wharf.git
   name: WaggleNet-Wharf
@@ -110,8 +121,7 @@ wharf:
   tools:
     - python3.6
   requires:
-    - iam
-    - backplane
+    - rabbit
 
 broker:
   git: https://github.com/WaggleNet/WaggleNet-Broker.git
