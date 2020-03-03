@@ -110,7 +110,7 @@ components:
     requires:
       - iam_appkeys
       - backplane
-    bring:
+    bringup:
       - type: compose
         service: frontier
     precheck: healthcheck
