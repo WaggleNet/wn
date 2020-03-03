@@ -13,15 +13,6 @@ services:
       POSTGRES_USER: "wagglenet"
       POSTGRES_PASSWORD: "WiggleWaggle"
       PGPASSWORD: 'WiggleWaggle'
-  mqtt:
-    build: "./WaggleNet-Broker"
-    environment:
-      AUTH_HOSTNAME: iam
-      AUTH_HOSTPORT: 5001
-    ports:
-      - "1883:1883"
-    networks:
-      - wn_test_stack
   rabbit:
     image: rabbitmq:3-management
     ports:
