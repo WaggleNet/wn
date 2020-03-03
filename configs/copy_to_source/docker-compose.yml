@@ -26,6 +26,14 @@ services:
       - "15043:6379"
     networks:
       - wn_test_stack
+  influx:
+    image: influxdb
+    volumes:
+      - ./data/influx:/var/lib/influxdb
+    ports:
+      - "15044:8086"
+    networks:
+      - wn_test_stack
   iam:
     build: "./WaggleNet-Backend-IAM"
     ports:
@@ -33,7 +41,6 @@ services:
     environment:
       DB_URI: "postgres://wagglenet:WiggleWaggle@db/iam"
       DEVMODE: 1
-      NOAWS: 1
       SECRET_KEY: "WiggleWaggle"
       WN_BACKPLANE_URI: "http://backplane:80"
       NOAWS: 1
@@ -45,6 +52,8 @@ services:
       - "15003:80"
     environment:
       DB_URI: "postgres://wagglenet:WiggleWaggle@db/backplane"
+      REDIS_URL: "redis://redis"
+      INFLUXDB_HOST: 'influx'
     networks:
       - wn_test_stack
   devportal:
@@ -109,9 +118,10 @@ services:
     env_file:
       - "./data/envs/wharf.env"
     environment:
-      WN_BACKPLANE_URI: "http://backplane:80"
+      BACKPLANE_URL: "http://backplane:80"
       REDIS_URL: "redis://redis"
       AMQP_URL: "amqp://rabbit"
+      INFLUX_HOSTNAME: 'influx'
     networks:
       - wn_test_stack
 

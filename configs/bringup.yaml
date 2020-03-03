@@ -84,6 +84,8 @@ components:
     requires:
       - init
       - db
+      - redis
+      - influx
     bringup:
       - type: compose
         service: backplane
@@ -168,6 +170,7 @@ components:
       - iam
       - backplane
       - redis
+      - influx
       - rabbit
     bringup:
       - type: compose
