@@ -209,3 +209,33 @@ bridge:
   actions:
     init_env: default
     update_env: default
+
+notifier-ce:
+  git: https://github.com/WaggleNet/notification-condition-evaluator
+  name: notification-condition-evaluator
+  description: Evaluator for alarm conditions for Mobile Notifier
+  actions:
+    init_env:
+      - commands:
+          - npm install
+        message: Initializing Node JS package...
+    update_env:
+      - commands:
+          - npm install
+        message: Initializing Node JS package...
+
+notifier-te:
+  git: https://github.com/WaggleNet/WaggleNet-Notifier-TriggerEvaluator
+  name: WaggleNet-Notifier-TriggerEvaluator
+  description: Trigger Evalution component of Mobile Notifier
+  actions:
+    init_env: default
+    update_env: default
+
+notifier-ns:
+  git: https://github.com/WaggleNet/WaggleNet-Notifier-NotificationSender
+  name: WaggleNet-Notifier-NotificationSender
+  description: Notification Sender component of Mobile Notifier
+  actions:
+    init_env: default
+    update_env: default
