@@ -87,6 +87,7 @@ services:
       REDIS_URL: "redis://redis"
       # IAM_APP_ID in env_file
       IAM_PEM: /work/keys/wagglenet.pem
+      DEBUG: 1
     volumes:
       - ./data/keys:/work/keys
     networks:
